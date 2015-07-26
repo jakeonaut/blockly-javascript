@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>custom blockly</title>
+  <script src="blockly/blockly_compressed.js"></script>
+  <script src="blockly/blocks_compressed.js"></script>
+  <script src="blockly/javascript_compressed.js"></script>
+  <script src="blockly/msg/js/en.js"></script>
+  <script src="turtle_blocks.js"></script>
+  <script src="object_blocks.js"></script>
+  <script src="Turtle.js"></script>
+  <script src="turtle_run.js"></script>
+  <style>
+    body {
+      background-color: #fff;
+      font-family: sans-serif;
+    }
+    h1 {
+      font-weight: normal;
+      font-size: 140%;
+    }
+	input{
+		font-size: 24px;
+	}
+	textarea{
+		width: 640px;
+		height:240px;
+	}
+	.blocklyDiv{
+		height: 480px; width: 600px;
+	}
+	.tab{
+		cursor: pointer;
+		margin-left: 0px;
+		margin-right: 0px;
+		padding: 3px;
+		padding-left: 6px;
+		padding-right: 6px;
+	}
+	.selected{
+		cursor: default;
+		background-color: #dddddd;
+	}
+	.tab:hover{
+		background-color: #dddddd;
+	}
+  </style>
+</head>
+<body>
+  <h1><a href="https://developers.google.com/blockly/">Blockly</a> &gt;
+    JavaScript
+  <table>
+	<tr>
+		<td>
+			<canvas id="turtle" width="400" height="400" style="display:none;"></canvas>
+			<canvas id="paint" width="400" height="400" style="display:none;"></canvas>
+			<canvas id="display" width="400" height="400"></canvas>
+			<br/>
+			Speed: <input type="range" id="programSpeed" />
+			<input type="submit" value="Run Program" id="runProgram"/>
+			<br/>
+			<input type="submit" value="Export Blocks" id="exportBlocks"/>
+			<input type="submit" value="Import Blocks" id="importBlocks"/>
+		</td>
+		<td>
+			<span id="tab0" class="tab selected">main</span><span id="new_tab" class="tab">+</span>
+			<div id="blocklyDiv_tab0" class="blocklyDiv"></div>
+			<div id="new_blocklyDiv" class="blocklyDiv" style="display: none;"></div>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			<textarea id="block_xml"></textarea>
+		</td>
+	</tr>
+  </table>
+
+	<xml id="toolbox" style="display: none">
+		<category name="Objects">
+			<block type="object_define">
+			</block>
+		</category>
+		<category name="Custom">
+		</category>
+		<category name="Turtle">
+			<block type="turtle_move">
+				<value name="VALUE">
+					<block type="math_number">
+						<field name="NUM">10</field>
+					</block>
+				</value>
+			</block>
+			<block type="turtle_turn">
+				<value name="VALUE">
+					<block type="math_number">
+						<field name="NUM">90</field>
+					</block>
+				</value>
+			</block>
+			<block type="turtle_width">
+				<value name="WIDTH">
+					<block type="math_number">
+						<field name="NUM">1</field>
+					</block>
+				</value>
+			</block>
+			<block type="turtle_pen"></block>
+			<block type="turtle_visibility"></block>
+			<block type="turtle_print">
+				<value name="TEXT">
+					<block type="text"/>
+				</value>
+			</block>
+			<block type="turtle_font"></block>
+		</category>
+		<category name="Colour">
+			<block type="turtle_colour">
+				<value name="COLOUR">
+					<block type="colour_picker">
+				</value>
+			</block>
+			<block type="colour_picker"></block>
+			<block type="colour_random"></block>
+			<block type="colour_rgb">
+				<value name="RED">
+					<block type="math_number">
+						<field name="NUM">100</field>
+					</block>
+				</value>
+				<value name="GREEN">
+					<block type="math_number">
+						<field name="NUM">50</field>
+					</block>
+				</value>
+				<value name="BLUE">
+					<block type="math_number">
+						<field name="NUM">0</field>
+					</block>
+				</value>
+			</block>
+			<block type="colour_blend">
+				<value name="COLOUR1">
+					<block type="colour_picker">
+						<field name="COLOUR">#ff0000</field>
+					</block>
+				</value>
+				<value name="COLOUR2">
+					<block type="colour_picker">
+						<field name="COLOUR">#3333ff</field>
+					</block>
+				</value>
+				<value name="RATIO">
+					<block type="math_number">
+						<field name="NUM">0.5</field>
+					</block>
+				</value>
+			</block>
+		</category>
+		<category name="Logic">
+			<block type="controls_if"></block>
+			<block type="logic_compare"></block>
+			<block type="logic_operation"></block>
+			<block type="logic_negate"></block>
+			<block type="logic_boolean"></block>
+			<block type="logic_ternary"></block>
+		</category>
+		<category name="Loops">
+			<block type="controls_repeat_ext">
+				<value name="TIMES">
+					<block type="math_number">
+						<field name="NUM">10</field>
+					</block>
+				</value>
+			</block>
+			<block type="controls_whileUntil"></block>
+			<block type="controls_for">
+				<value name="FROM">
+					<block type="math_number">
+						<field name="NUM">1</field>
+					</block>
+				</value>
+				<value name="TO">
+					<block type="math_number">
+						<field name="NUM">10</field>
+					</block>
+				</value>
+				<value name="BY">
+					<block type="math_number">
+						<field name="NUM">1</field>
+					</block>
+				</value>
+			</block>
+			<block type="controls_flow_statements"></block>
+		</category>
+		<category name="Math">
+			<block type="math_number"></block>
+			<block type="math_arithmetic"></block>
+			<block type="math_single"></block>
+			<block type="math_trig"></block>
+			<block type="math_constant"></block>
+			<block type="math_number_property"></block>
+			<block type="math_change">
+				<value name="DELTA">
+					<block type="math_number">
+						<field name="NUM">1</field>
+					</block>
+				</value>
+			</block>
+			<block type="math_round"></block>
+			<block type="math_modulo"></block>
+			<block type="math_constrain">
+				<value name="LOW">
+					<block type="math_number">
+						<field name="NUM">1</field>
+					</block>
+				</value>
+				<value name="HIGH">
+					<block type="math_number">
+						<field name="NUM">100</field>
+					</block>
+				</value>
+			</block>
+			<block type="math_random_int">
+				<value name="FROM">
+					<block type="math_number">
+						<field name="NUM">1</field>
+					</block>
+				</value>
+				<value name="TO">
+					<block type="math_number">
+						<field name="NUM">100</field>
+					</block>
+				</value>
+			</block>
+			<block type="math_random_float"></block>
+		</category>
+		<category name="Variables" custom="VARIABLE"/>
+		<category name="Functions" custom="PROCEDURE"/>
+	</xml>
+</body>
+</html>
