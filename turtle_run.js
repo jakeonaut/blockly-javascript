@@ -1,59 +1,5 @@
-function Main(){}
 Main.display_canvas;
 Main.display_ctx;
-
-Main.workspaces = [];
-Main.curr_workspace;
-
-function InitializeTabs(){
-	function tabClickHandler(e){
-		var divs = document.getElementsByClassName("blocklyDiv");
-		for (var i = 0; i < divs.length; i++){
-			divs[i].style.display = "none";
-		}
-		
-		var tabs = document.getElementsByClassName("tab");
-		for (var i = 0; i < tabs.length; i++){
-			tabs[i].className = "tab";
-		}
-		this.className += " selected";
-		
-		document.getElementById("blocklyDiv_" + this.id).style.display = "";
-		var index_text = this.id.slice(3, 4);
-		var index = Number(index_text);
-		
-		Main.curr_workspace = Main.workspaces[index];
-	}
-	
-	var tabs = document.getElementsByClassName("tab");
-	for (var i = 0; i < tabs.length-1; i++){
-		tabs[i].onclick = tabClickHandler;
-	}
-	
-	document.getElementById("new_tab").onclick = function(e){
-		var tabs = document.getElementsByClassName("tab");
-		var index = tabs.length-1;
-		var new_tab = document.createElement("span");
-		new_tab.id = "tab" + index;
-		new_tab.className = "tab";
-		new_tab.innerHTML = "object" + index;
-		new_tab.onclick = tabClickHandler;		
-		this.parentNode.insertBefore(new_tab, this);
-		
-		var new_div = document.createElement("div");
-		new_div.className = "blocklyDiv";
-		new_div.id = "blocklyDiv_tab" + index;		
-		
-		var old_div = document.getElementById("new_blocklyDiv");
-		old_div.parentNode.insertBefore(new_div, old_div);
-			
-		Blockly.inject(new_div, {toolbox: document.getElementById('toolbox')});
-		Main.workspaces.push(Blockly.mainWorkspace);
-		Main.curr_workspace = Blockly.mainWorkspace;
-		
-		new_tab.onclick(e);
-	}
-}
   
 window.onload = function(){
 	Blockly.inject(document.getElementById('blocklyDiv_tab0'),
@@ -136,31 +82,4 @@ Main.RunProgram = function(e){
 Main.ResetProgram = function(e){
 	Turtle.Reset();
 	Main.Redraw();
-}
-
-Main.LoadBlocks = function(defaultXml){
-  try {
-    var loadOnce = window.sessionStorage.loadOnceBlocks;
-  } catch(e) {
-    // Firefox sometimes throws a SecurityError when accessing sessionStorage.
-    // Restarting Firefox fixes this, so it looks like a bug.
-    var loadOnce = null;
-  }
-  if ('BlocklyStorage' in window && window.location.hash.length > 1) {
-    // An href with #key trigers an AJAX call to retrieve saved blocks.
-    BlocklyStorage.retrieveXml(window.location.hash.substring(1));
-  } else if (loadOnce) {
-    // Language switching stores the blocks during the reload.
-    delete window.sessionStorage.loadOnceBlocks;
-    var xml = Blockly.Xml.textToDom(loadOnce);
-    Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
-  } else if (defaultXml) {
-    // Load the editor with default starting blocks.
-    var xml = Blockly.Xml.textToDom(defaultXml);
-    Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
-  } else if ('BlocklyStorage' in window) {
-    // Restore saved blocks in a separate thread so that subsequent
-    // initialization is not affected from a failed load.
-    window.setTimeout(BlocklyStorage.restoreBlocks, 0);
-  }
 }
